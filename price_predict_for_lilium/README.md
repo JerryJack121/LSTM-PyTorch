@@ -1,2 +1,1 @@
-# LSTM-Pytorch
- 
+# 用於AIdea平台香水百合價量預測競賽

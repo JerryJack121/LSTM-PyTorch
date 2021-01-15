@@ -1,2 +1,0 @@
-https://invisprints.github.io/blog/pytorch/stock/lstm/2020/04/17/LSTM-stock.html
-https://www.twblogs.net/a/5c1f7b88bd9eee16b4a71bc9

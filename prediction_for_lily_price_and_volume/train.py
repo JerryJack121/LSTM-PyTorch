@@ -18,7 +18,7 @@ cloumn = '最高價'
 n = 5  # 取前n天的資料作為特徵
 train_end = 200
 
-train_df, val_df = utils.read_data(path_csv, cloumn, n, train_end)    # shape = (train_end-n)*(n+1)
+train_df, val_df = utils.read_data(path_csv, cloumn, n, train_end=train_end)    # shape = (train_end-n)*(n+1)
 
 # 正歸化
 train = np.array(train_df)
@@ -34,7 +34,6 @@ train = torch.Tensor(train)
 val = torch.Tensor(val)
 trainset = utils.Setloader(train)
 valnset = utils.Setloader(val)
-
 
 # train
 batch_size = 100

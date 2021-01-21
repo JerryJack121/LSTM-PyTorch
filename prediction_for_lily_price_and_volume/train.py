@@ -10,16 +10,19 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 import os
 
-#OMP: Error #15: Initializing libiomp5md.dll, but found libiomp5md.dll already initialized.
-os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+# #OMP: Error #15: Initializing libiomp5md.dll, but found libiomp5md.dll already initialized.
+# os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 path_csv = r'D:\dataset\lilium_price\108\FS443.csv'
-cloumn = '最高價'
+cloumn = ['最高價', '上價']
 n = 5  # 取前n天的資料作為特徵
 train_end = 200
-
-train_df, val_df = utils.read_data(path_csv, cloumn, n, train_end=train_end)    # shape = (train_end-n)*(n+1)
-
+train_df = pd.DataFrame()
+val_df = pd.DataFrame()
+for col in cloumn:
+    train_col_df, val_col_df = utils.read_data(path_csv, col, n, train_end=train_end)    # shape = (train_end-n)*(n+1)
+    train_df = pd.concat([train_df,train_col_df],axis=1)  
+    val_df = pd.concat([val_df,val_col_df],axis=1)
 # 正歸化
 train = np.array(train_df)
 val = np.array(val_df)

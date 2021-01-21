@@ -40,8 +40,9 @@ class Setloader(Dataset):
             else:
                 # print(data[:, ((n+1)*i):(n*i+1)].float())
                 all_data = np.concatenate((all_data, data[:, (n+1)*i:n*(i+1)+1].float()), axis=1)
-                all_label =np.vstack((all_label,all_label, data[:, (n+1)*(i+1)-1].float()))
-        print(all_label)
+                all_label =np.vstack((all_label, data[:, (n+1)*(i+1)-1].float()))
+                all_label =all_label.T
+
         self.data = all_data
         self.label = all_label
     def __getitem__(self, index):

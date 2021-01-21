@@ -10,8 +10,8 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 import os
 
-# #OMP: Error #15: Initializing libiomp5md.dll, but found libiomp5md.dll already initialized.
-# os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+#OMP: Error #15: Initializing libiomp5md.dll, but found libiomp5md.dll already initialized.
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 path_csv = r'D:\dataset\lilium_price\108\FS443.csv'
 cloumn = ['最高價', '上價']
@@ -27,11 +27,11 @@ for col in cloumn:
 # 正歸化
 train = np.array(train_df)
 val = np.array(val_df)
-# mean =  np.mean(train,axis=0)
-# std = np.std(train,axis=0)
+mean =  np.mean(train,axis=0)
+std = np.std(train,axis=0)
 
-# train = (train -mean) / std
-# val = (val - mean) /std
+train = (train -mean) / std
+val = (val - mean) /std
 
 # to tensor
 train = torch.Tensor(train)
@@ -42,8 +42,8 @@ valnset = utils.Setloader(val, n, len(cloumn))
 # train
 batch_size = 100
 LR = 0.0001
-num_epochs = 1000
-model = model.RNN_model(n)
+num_epochs = 10000
+model = model.RNN_model(n*len(cloumn), num_feature=len(cloumn))
 # 選擇優化器與損失函數
 optimizer = torch.optim.Adam(model.parameters(), lr=LR) 
 criterion = nn.MSELoss()
@@ -102,10 +102,10 @@ for epoch in range(num_epochs):
     val_loss_list.append(val_loss)
     print('train_loss: {}, valid_loss: {}'.format(loss, val_loss) )
     #每10個epochs及最後一個epoch儲存模型
-    if (not epoch % 10) or (epoch == num_epochs)  :
+    if (not epoch % 100) or (epoch == num_epochs)  :
         torch.save(model.state_dict(), './logs/epoch%d-loss%d-val_loss%.4f.pth' %
         (epoch, loss, val_loss))
-print('mean: %.4f std: %.4f'%(mean,std))
+print('mean: %.4f std: %.4f'%(mean[0],std[0]))
 
 #繪製圖
 plt.figure()

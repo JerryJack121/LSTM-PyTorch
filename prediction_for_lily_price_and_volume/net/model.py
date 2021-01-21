@@ -1,7 +1,7 @@
 import torch.nn as nn
 
 class RNN_model(nn.Module):
-    def __init__(self, input_size):
+    def __init__(self, input_size, num_feature):
         super(RNN_model, self).__init__()
         self.rnn = nn.LSTM(
             input_size=input_size,
@@ -10,7 +10,7 @@ class RNN_model(nn.Module):
             batch_first=True
         )
         self.out = nn.Sequential(
-            nn.Linear(64, 1)
+            nn.Linear(64, num_feature)
         )
 
     def forward(self, x):

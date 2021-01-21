@@ -17,10 +17,11 @@ def read_data(path_csv, cloumn,n ,train_end):
     df_col = df[cloumn].astype(float)
     train_series, test_series = df_col[:train_end], df_col[train_end - n:]
     train_df = generate_df_affect_by_n_days(train_series, n)
+    test_df = generate_df_affect_by_n_days(test_series, n)
 
-    return train_df
+    return train_df, test_df
 
-class TrainSet(Dataset):
+class Setloader(Dataset):
     def __init__(self, data):
         self.data, self.label = data[:, :-1].float(), data[:, -1].float()
 

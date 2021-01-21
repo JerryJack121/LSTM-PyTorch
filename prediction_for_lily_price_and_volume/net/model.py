@@ -1,8 +1,8 @@
 import torch.nn as nn
 
-class RNN(nn.Module):
+class RNN_model(nn.Module):
     def __init__(self, input_size):
-        super(RNN, self).__init__()
+        super(RNN_model, self).__init__()
         self.rnn = nn.LSTM(
             input_size=input_size,
             hidden_size=64,

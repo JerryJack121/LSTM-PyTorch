@@ -32,9 +32,9 @@ valnset = utils.Setloader(val)
 batch_size = 10
 LR = 0.0001
 num_epochs = 11
-rnn = model.RNN(n)
+model = model.RNN_model(n)
 # 選擇優化器與損失函數
-optimizer = torch.optim.Adam(rnn.parameters(), lr=LR) 
+optimizer = torch.optim.Adam(model.parameters(), lr=LR) 
 criterion = nn.MSELoss()
 
 trainloader = DataLoader(trainset, batch_size=10, shuffle=False)
@@ -47,11 +47,11 @@ for epoch in range(num_epochs):
     epoch += 1
     print('running epoch: {} / {}'.format(epoch, num_epochs))
     #訓練模式
-    rnn.train()
+    model.train()
     total_loss = 0
     with tqdm(total=train_epoch_size) as pbar:
         for inputs, target in trainloader:
-            output = rnn(torch.unsqueeze(inputs, dim=0))
+            output = model(torch.unsqueeze(inputs, dim=0))
             loss = criterion(torch.squeeze(output), target)
             running_loss = loss.item()
             total_loss += running_loss/inputs.shape[0]
@@ -59,22 +59,24 @@ for epoch in range(num_epochs):
             loss.backward()  # back propagation, compute gradients
             optimizer.step()            
             #更新進度條
+            pbar.set_description('train')
             pbar.set_postfix(
                     **{
                         'running_loss': running_loss,
                     })
             pbar.update(1)
     #評估模式
-    rnn.eval()
+    model.eval()
     total_val_loss = 0
     with tqdm(total=val_epoch_size) as pbar:
         with torch.no_grad():
             for inputs, target in valloader:
-                output = rnn(torch.unsqueeze(inputs, dim=0))
+                output = model(torch.unsqueeze(inputs, dim=0))
                 loss = criterion(torch.squeeze(output), target)
                 running_val_loss = loss.item()
                 total_val_loss += running_val_loss/inputs.shape[0]
                 #更新進度條
+                pbar.set_description('validation')
                 pbar.set_postfix(
                         **{
                             'running_val_loss': running_val_loss,
@@ -83,5 +85,5 @@ for epoch in range(num_epochs):
     print('train_loss: {}, valid_loss: {}'.format(total_loss, total_val_loss) )
     #每10個epochs及最後一個epoch儲存模型
     if (not epoch % 10) or (epoch == num_epochs)  :
-        torch.save(rnn.state_dict(), './logs/epoch%d-loss%d-val_loss%.4f.pth' %
+        torch.save(model.state_dict(), './logs/epoch%d-loss%d-val_loss%.4f.pth' %
         (epoch, total_loss, total_val_loss))

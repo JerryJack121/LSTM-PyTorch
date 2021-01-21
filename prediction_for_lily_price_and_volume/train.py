@@ -23,20 +23,21 @@ for col in cloumn:
     train_col_df, val_col_df = utils.read_data(path_csv, col, n, train_end=train_end)    # shape = (train_end-n)*(n+1)
     train_df = pd.concat([train_df,train_col_df],axis=1)  
     val_df = pd.concat([val_df,val_col_df],axis=1)
+
 # 正歸化
 train = np.array(train_df)
 val = np.array(val_df)
-mean =  np.mean(train)
-std = np.std(train)
+# mean =  np.mean(train,axis=0)
+# std = np.std(train,axis=0)
 
-train = (train -mean) / std
-val = (val - mean) /std
+# train = (train -mean) / std
+# val = (val - mean) /std
 
 # to tensor
 train = torch.Tensor(train)
 val = torch.Tensor(val)
-trainset = utils.Setloader(train)
-valnset = utils.Setloader(val)
+trainset = utils.Setloader(train, n, len(cloumn))
+valnset = utils.Setloader(val, n, len(cloumn))
 
 # train
 batch_size = 100

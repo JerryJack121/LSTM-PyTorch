@@ -30,9 +30,20 @@ def read_data(path_csv, cloumn, n , path_lastyear_csv=None, train_end=None):
     return train_df, test_df
 
 class Setloader(Dataset):
-    def __init__(self, data):
-        self.data, self.label = data[:, :-1].float(), data[:, -1].float()
+    def __init__(self, data, n , num_col):
+        # self.data, self.label = data[:, :-1].float(), data[:, -1].float()
+        for i in range(num_col):
+            if i == 0:
+                all_data =  data[:, 0:n].float()
+                all_label = data[:, n].float()
 
+            else:
+                # print(data[:, ((n+1)*i):(n*i+1)].float())
+                all_data = np.concatenate((all_data, data[:, (n+1)*i:n*(i+1)+1].float()), axis=1)
+                all_label =np.vstack((all_label,all_label, data[:, (n+1)*(i+1)-1].float()))
+        print(all_label)
+        self.data = all_data
+        self.label = all_label
     def __getitem__(self, index):
         return self.data[index], self.label[index]
 

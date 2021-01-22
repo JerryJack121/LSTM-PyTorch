@@ -21,24 +21,23 @@ if torch.cuda.is_available():
 else:
     device = torch.device('cpu')
 
-path_csv = 
 cloumn = [ '上價', '中價', '平均價', '交易量']
-n = 10  # 取前n天的資料作為特徵
+n = 5  # 取前n天的資料作為特徵
 
 #載入資料集
-train_x = pd.read_csv(r'D:\dataset\lilium_price\train_x\108\108_FS443.csv', encoding='utf-8')
-train_y = pd.read_csv(r'D:\dataset\lilium_price\train_y\108\108_FS443.csv', encoding='utf-8')
-val_x = pd.read_csv(r'D:\dataset\lilium_price\val_x\108\108_FS443.csv', encoding='utf-8')
-val_y = pd.read_csv(r'D:\dataset\lilium_price\val_y\108\108_FS443.csv', encoding='utf-8')
+train_x = pd.read_csv(r'D:\dataset\lilium_price\train_x\108all.csv', encoding='utf-8')
+train_y = pd.read_csv(r'D:\dataset\lilium_price\train_y\108all.csv', encoding='utf-8')
+val_x = pd.read_csv(r'D:\dataset\lilium_price\val_x\108all.csv', encoding='utf-8')
+val_y = pd.read_csv(r'D:\dataset\lilium_price\val_y\108all.csv', encoding='utf-8')
 
 #正規化
 x_scaler = StandardScaler().fit(train_x)
-y_scaler = StandardScaler().fit(train_y)
+# y_scaler = StandardScaler().fit(train_y)
 train_x = x_scaler.transform(train_x)
-train_y = y_scaler.transform(train_y)
+# train_y = y_scaler.transform(train_y)
 
 val_x = x_scaler.transform(val_x)
-val_y = y_scaler.transform(val_y)
+# val_y = y_scaler.transform(val_y)
 
 # to tensor
 train_x = torch.Tensor(train_x)
@@ -52,9 +51,9 @@ valset = utils.Setloader(val_x, val_y)
 # train
 batch_size = 100
 LR = 0.0001
-num_epochs = 500
+num_epochs = 800
 
-model = model.RNN_model(input_dim=n*len(cloumn), output_dim=len(cloumn)).to(device)
+model = model.RNN_model(input_dim=train_x.shape[1], output_dim=train_y.shape[1]).to(device)
 # 選擇優化器與損失函數
 optimizer = torch.optim.Adam(model.parameters(), lr=LR) 
 criterion = nn.MSELoss().to(device)

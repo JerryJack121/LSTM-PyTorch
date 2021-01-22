@@ -9,6 +9,7 @@ import math
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import os
+from sklearn.preprocessing import StandardScaler
 
 #OMP: Error #15: Initializing libiomp5md.dll, but found libiomp5md.dll already initialized.
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
@@ -17,39 +18,40 @@ path_csv = r'D:\dataset\lilium_price\108\FS443.csv'
 cloumn = ['最高價', '上價']
 n = 5  # 取前n天的資料作為特徵
 train_end = 200
-train_df = pd.DataFrame()
-val_df = pd.DataFrame()
-for col in cloumn:
-    train_col_df, val_col_df = utils.read_data(path_csv, col, n, train_end=train_end)    # shape = (train_end-n)*(n+1)
-    train_df = pd.concat([train_df,train_col_df],axis=1)  
-    val_df = pd.concat([val_df,val_col_df],axis=1)
 
-# 正歸化
-train = np.array(train_df)
-val = np.array(val_df)
-mean =  np.mean(train,axis=0)
-std = np.std(train,axis=0)
-
-train = (train -mean) / std
-val = (val - mean) /std
+#切分特徵、label
+train_df, val_df = utils.read_col_data(path_csv, cloumn, n , train_end=train_end)
+train_x, train_y = utils.split_xy(train_df, len(cloumn), n)
+val_x, val_y = utils.split_xy(val_df, len(cloumn), n)
+#正規化
+x_scaler = StandardScaler().fit(train_x)
+y_scaler = StandardScaler().fit(train_y)
+train_x = x_scaler.transform(train_x)
+train_y = y_scaler.transform(train_y)
+val_x = x_scaler.transform(val_x)
+val_y = y_scaler.transform(val_y)
 
 # to tensor
-train = torch.Tensor(train)
-val = torch.Tensor(val)
-trainset = utils.Setloader(train, n, len(cloumn))
-valnset = utils.Setloader(val, n, len(cloumn))
+train_x = torch.Tensor(train_x)
+train_y = torch.Tensor(train_y)
+val_x = torch.Tensor(val_x)
+val_y = torch.Tensor(val_y)
+# Setloader
+trainset = utils.Setloader(train_x, train_y)
+valset = utils.Setloader(val_x, val_y)
 
 # train
 batch_size = 100
 LR = 0.0001
-num_epochs = 10000
-model = model.RNN_model(n*len(cloumn), num_feature=len(cloumn))
+num_epochs = 10
+
+model = model.RNN_model(input_dim=n*len(cloumn), output_dim=len(cloumn))
 # 選擇優化器與損失函數
 optimizer = torch.optim.Adam(model.parameters(), lr=LR) 
 criterion = nn.MSELoss()
 
 trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True)
-valloader = DataLoader(valnset, batch_size=batch_size, shuffle=True)
+valloader = DataLoader(valset, batch_size=batch_size, shuffle=True)
 train_epoch_size = math.ceil(len(trainloader.dataset)/batch_size)
 val_epoch_size = math.ceil(len(valloader.dataset)/batch_size)
 
@@ -100,12 +102,12 @@ for epoch in range(num_epochs):
                 pbar.update(1)
     val_loss = total_val_loss/len(valloader.dataset)
     val_loss_list.append(val_loss)
-    print('train_loss: {}, valid_loss: {}'.format(loss, val_loss) )
+    print('train_loss: {:.4f}, valid_loss: {:.4f}'.format(loss, val_loss) )
     #每10個epochs及最後一個epoch儲存模型
     if (not epoch % 100) or (epoch == num_epochs)  :
         torch.save(model.state_dict(), './logs/epoch%d-loss%d-val_loss%.4f.pth' %
         (epoch, loss, val_loss))
-print('mean: %.4f std: %.4f'%(mean[0],std[0]))
+
 
 #繪製圖
 plt.figure()

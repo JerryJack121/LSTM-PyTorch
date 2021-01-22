@@ -28,7 +28,7 @@ def read_data(path_csv, cloumn, n , path_lastyear_csv, train_end):
 
     return train_df, test_df
 
-def read_col_data(path_csv, cloumn, n , path_lastyear_csv=None, train_end=None):.
+def read_col_data(path_csv, cloumn, n , path_lastyear_csv=None, train_end=None):
     if train_end:   #訓練、驗證集
         train_df = pd.DataFrame()
         val_df = pd.DataFrame()

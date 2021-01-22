@@ -21,21 +21,22 @@ if torch.cuda.is_available():
 else:
     device = torch.device('cpu')
 
-path_csv = r'D:\dataset\lilium_price\108\FS443.csv'
+path_csv = 
 cloumn = [ '上價', '中價', '平均價', '交易量']
 n = 10  # 取前n天的資料作為特徵
-train_end = 200
 
-#切分訓練集、驗證集
-train_df, val_df = utils.read_col_data(path_csv, cloumn, n , train_end=train_end)
-#切分特徵、label
-train_x, train_y = utils.split_xy(train_df, len(cloumn), n)
-val_x, val_y = utils.split_xy(val_df, len(cloumn), n)
+#載入資料集
+train_x = pd.read_csv(r'D:\dataset\lilium_price\train_x\108\108_FS443.csv', encoding='utf-8')
+train_y = pd.read_csv(r'D:\dataset\lilium_price\train_y\108\108_FS443.csv', encoding='utf-8')
+val_x = pd.read_csv(r'D:\dataset\lilium_price\val_x\108\108_FS443.csv', encoding='utf-8')
+val_y = pd.read_csv(r'D:\dataset\lilium_price\val_y\108\108_FS443.csv', encoding='utf-8')
+
 #正規化
 x_scaler = StandardScaler().fit(train_x)
 y_scaler = StandardScaler().fit(train_y)
 train_x = x_scaler.transform(train_x)
 train_y = y_scaler.transform(train_y)
+
 val_x = x_scaler.transform(val_x)
 val_y = y_scaler.transform(val_y)
 

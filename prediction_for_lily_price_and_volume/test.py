@@ -20,7 +20,7 @@ def new_x(predict, test_x, n, x_scaler):
     return test_x
 
 
-# test_csv = r'D:\dataset\lilium_price\109\FS443.csv'
+test_csv = r'D:\dataset\lilium_price\109\FS443.csv'
 path_lastyear_year = r'D:\dataset\lilium_price\val_x\108all.csv'
 path_weight = r'./weights/epoch50-loss0.6024-val_loss0.6899.pth'
 path_result_csv = './results/109result.csv'
@@ -28,8 +28,7 @@ cloumn = [ '上價', '中價', '平均價', '交易量']
 n = 5  # 取前n天的資料作為特徵
 
 
-# test_date = pd.read_csv(test_csv, encoding='utf-8')['日　　期']
-# test_df = utils.read_col_data(test_csv, cloumn, n, path_lastyear_csv=path_lastyear_year)
+test_date = pd.read_csv(test_csv, encoding='utf-8')['日　　期']
 test_df = pd.read_csv(path_lastyear_year)[-1:]  # 取去年的最後n天作為今天的初始特徵
 test_x = np.array(test_df)
 
@@ -49,7 +48,7 @@ with tqdm(total=372) as pbar:
             predict = model(torch.unsqueeze(test_x, dim=0))
             predict = predict[0][0]     
             test_x = new_x(predict, test_x, n, x_scaler)
-            output_list.append(predict)
+            output_list.append(np.array(predict))
             pbar.update(1)
 output_arr = np.array(output_list)
 

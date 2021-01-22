@@ -1,6 +1,6 @@
 # 用於AIdea平台香水百合價量預測競賽
 🚧施工中
-
+1. 資料預處理請至 [csv-data-preprocessing](https://github.com/JerryJack121/csv-data-preprocessing/tree/main/prediction_for_lily_price_and_volume)專案查看。
 ## Acknowledgements
 1. GitHub: [LSTM 模型预测 A 股走势](https://github.com/invisprints/blog/blob/master/_notebooks/2020-04-17-LSTM-stock.ipynb) @[invisprints, Deep learning](https://github.com/invisprints)
 2. 台部落： [LSTM實現股票預測--pytorch版本【120+行代碼】](https://www.twblogs.net/a/5c1f7b88bd9eee16b4a71bc9)  @[肥宅_Sean](https://www.twblogs.net/u/5b8cf7b42b7177188337cab5)

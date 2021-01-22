@@ -32,18 +32,14 @@ val_y = pd.read_csv(r'D:\dataset\lilium_price\val_y\108all.csv', encoding='utf-8
 
 #正規化
 x_scaler = StandardScaler().fit(train_x)
-# y_scaler = StandardScaler().fit(train_y)
 train_x = x_scaler.transform(train_x)
-# train_y = y_scaler.transform(train_y)
-
 val_x = x_scaler.transform(val_x)
-# val_y = y_scaler.transform(val_y)
 
 # to tensor
 train_x = torch.Tensor(train_x)
-train_y = torch.Tensor(train_y)
+train_y = torch.Tensor(np.array(train_y))
 val_x = torch.Tensor(val_x)
-val_y = torch.Tensor(val_y)
+val_y = torch.Tensor(np.array(val_y))
 # Setloader
 trainset = utils.Setloader(train_x, train_y)
 valset = utils.Setloader(val_x, val_y)
@@ -51,7 +47,7 @@ valset = utils.Setloader(val_x, val_y)
 # train
 batch_size = 100
 LR = 0.0001
-num_epochs = 800
+num_epochs = 1000
 
 model = model.RNN_model(input_dim=train_x.shape[1], output_dim=train_y.shape[1]).to(device)
 # 選擇優化器與損失函數

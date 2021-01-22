@@ -11,9 +11,9 @@ from sklearn.preprocessing import StandardScaler
 
 test_csv = r'D:\dataset\lilium_price\109\FS443.csv'
 path_lastyear_year = r'D:\dataset\lilium_price\108\FS443.csv'
-path_weight = r'./weights/0121/epoch1000-loss0-val_loss0.4306.pth'
-path_result_csv = './results/result.csv'
-cloumn = ['最高價',  '上價']
+path_weight = r'./weights/0122/epoch1000-loss0-val_loss0.4937.pth'
+path_result_csv = './results/109result.csv'
+cloumn = [ '上價', '中價', '平均價', '交易量']
 n = 5  # 取前n天的資料作為特徵
 
 
@@ -50,5 +50,7 @@ output_arr = y_scaler.inverse_transform(output_arr)
 result_df = pd.DataFrame({
     '日期': test_date,
     '最高價':output_arr[:, 0],
-    '上價':output_arr[:, 1]
+    '上價':output_arr[:, 1],
+    '平均價':output_arr[:, 2],
+    '交易量':output_arr[:, 3]
 }).to_csv(path_result_csv, index=None, encoding='utf_8_sig')

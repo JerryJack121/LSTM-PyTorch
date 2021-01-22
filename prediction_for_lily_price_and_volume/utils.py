@@ -28,9 +28,7 @@ def read_data(path_csv, cloumn, n , path_lastyear_csv, train_end):
 
     return train_df, test_df
 
-def read_col_data(path_csv, cloumn, n , path_lastyear_csv=None, train_end=None):
-    
-    
+def read_col_data(path_csv, cloumn, n , path_lastyear_csv=None, train_end=None):.
     if train_end:   #訓練、驗證集
         train_df = pd.DataFrame()
         val_df = pd.DataFrame()
@@ -52,12 +50,10 @@ def split_xy(df, num_col, n):
     for i in range(num_col):
         if i == 0:
             x =  arr[:, 0:n]
-            y = arr[:, n]
-
+            y = arr[:, n].reshape(-1,1)
         else:
-            x = np.concatenate((x, arr[:, (n+1)*i:n*(i+1)+1]), axis=1)
-            y =np.vstack((y, arr[:, (n+1)*(i+1)-1]))
-            y =y.T
+            x = np.concatenate((x, arr[:, (n+1)*i:(n+1)*(i+1)-1]), axis=1)
+            y = np.concatenate((y, arr[:, (n+1)*(i+1)-1].reshape(-1,1)), axis=1)
 
     return x, y
 

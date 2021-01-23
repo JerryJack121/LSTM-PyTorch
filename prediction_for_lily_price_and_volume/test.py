@@ -8,7 +8,7 @@ from net import model
 import math
 from tqdm import tqdm
 from sklearn.preprocessing import StandardScaler
-
+id = np.arange(1, 373)
 def new_x(predict, test_x, n, x_scaler):
     test_x =  x_scaler.inverse_transform(test_x)
 
@@ -20,12 +20,16 @@ def new_x(predict, test_x, n, x_scaler):
     return test_x
 
 
-path_lastyear_year = r'D:\dataset\lilium_price\val_x\108all.csv'
-path_weight = r'./weights/epoch10000-loss33934.8047-val_loss33840.2803.pth'
-path_result_csv = './results/predict.csv'
-# cloumn = [ '上價', '中價', '平均價', '交易量']
-n = 5  # 取前n天的資料作為特徵
+path_lastyear_year = r'D:\dataset\lilium_price\val_x\108all.csv'    #前一年的訓練資料
+path_weight = r'./weights/epoch10000-loss33934.8047-val_loss33840.2803.pth' #權重
+sub_path = './results/test_flower_price.csv'    #submit格式
+path_result_csv = './results/109submit.csv'
+flower_name = ['FS443', 'FS479', 'FS592', 'FS609', 'FS639', 'FS779', 'FS859', 'FS879', 'FS899', 'FS929']    # 需與訓練時的處理順序相同
+cloumn = [ 'price_high', 'price_mid', 'price_avg', 'volume']    # 需與訓練時的處理順序相同
 
+n = 5  # 取前n天的資料作為特徵
+f = 10  #花的種類數
+p = 4   #預測的價格數量
 
 test_df = pd.read_csv(path_lastyear_year)[-1:]  # 取去年的最後n天作為今天的初始特徵
 test_x = np.array(test_df)
@@ -49,5 +53,16 @@ for i in tqdm(range(372)):
         output_list.append(np.array(predict))
 output_arr = np.array(output_list)
 
-#匯出csv
-pd.DataFrame(output_arr).to_csv(path_result_csv, encoding='utf_8_sig')
+#輸出預測結果
+sub = pd.read_csv(sub_path)
+for index, row in sub.iterrows():
+    date = row['date']
+    flower = row['flower_no']
+    month = int(date.split('-')[1])
+    day = int(date.split('-')[2])
+    date_id = month*31 + day - 1
+    sub.loc[index, 'price_high'] = int(output_arr[date_id, p*(flower_name.index(flower))+0])
+    sub.loc[index, 'price_mid'] = int(output_arr[date_id, p*(flower_name.index(flower))+1])
+    sub.loc[index, 'price_avg'] = round((output_arr[date_id, p*(flower_name.index(flower))+2]), 1)
+    sub.loc[index, 'volume'] = int(output_arr[date_id, p*(flower_name.index(flower))+3])
+sub.to_csv(path_result_csv, index=None)

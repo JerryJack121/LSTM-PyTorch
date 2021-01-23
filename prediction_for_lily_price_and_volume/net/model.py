@@ -3,8 +3,8 @@ import torch.nn as nn
 class RNN_model(nn.Module):
     def __init__(self, input_dim, output_dim):
         super(RNN_model, self).__init__()
-        self.dnn1 = nn.Linear(input_dim, 512)
-        self.dnn2 = nn.Linear(512, 64)
+        # self.dnn1 = nn.Linear(input_dim, 512)
+        # self.dnn2 = nn.Linear(512, 256)
 
         self.rnn1 = nn.LSTM(
             input_size=input_dim,

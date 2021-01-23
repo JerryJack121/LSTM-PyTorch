@@ -46,8 +46,8 @@ valset = utils.Setloader(val_x, val_y)
 
 # train
 batch_size = 100
-LR = 0.0001
-num_epochs = 1000
+LR = 0.001
+num_epochs = 10000
 
 model = model.RNN_model(input_dim=train_x.shape[1], output_dim=train_y.shape[1]).to(device)
 # 選擇優化器與損失函數

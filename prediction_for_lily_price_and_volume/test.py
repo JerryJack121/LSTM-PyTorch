@@ -21,13 +21,13 @@ def new_x(predict, test_x, n, x_scaler):
 
 
 path_lastyear_year = r'D:\dataset\lilium_price\val_x\108all.csv'    #前一年的訓練資料
-path_weight = r'./weights/epoch10000-loss17922.0117-val_loss20182.6402.pth' #權重
+path_weight = r'./weights/epoch5000-loss121831.8831-val_loss26875.4116.pth' #權重
 sub_path = './results/test_flower_price.csv'    #submit格式
 path_result_csv = './results/109submit.csv'
 flower_name = ['FS443', 'FS479', 'FS592', 'FS609', 'FS639', 'FS779', 'FS859', 'FS879', 'FS899', 'FS929']    # 需與訓練時的處理順序相同
 cloumn = [ 'price_high', 'price_mid', 'price_avg', 'volume']    # 需與訓練時的處理順序相同
 
-n = 20  # 取前n天的資料作為特徵
+n = 10  # 取前n天的資料作為特徵
 f = 10  #花的種類數
 p = 4   #預測的價格數量
 

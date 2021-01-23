@@ -21,8 +21,8 @@ if torch.cuda.is_available():
 else:
     device = torch.device('cpu')
 
-cloumn = [ '上價', '中價', '平均價', '交易量']
-n = 5  # 取前n天的資料作為特徵
+# cloumn = [ '上價', '中價', '平均價', '交易量']
+n = 20  # 取前n天的資料作為特徵
 
 #載入資料集
 train_x = pd.read_csv(r'D:\dataset\lilium_price\train_x\108all.csv', encoding='utf-8')

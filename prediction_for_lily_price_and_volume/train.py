@@ -29,10 +29,10 @@ else:
 n = 10  # 取前n天的資料作為特徵
 
 #載入資料集
-train_x = pd.read_csv(r'D:\dataset\lilium_price\train_x\105-108all.csv', encoding='utf-8')
-train_y = pd.read_csv(r'D:\dataset\lilium_price\train_y\105-108all.csv', encoding='utf-8')
-val_x = pd.read_csv(r'D:\dataset\lilium_price\val_x\105-108all.csv', encoding='utf-8')
-val_y = pd.read_csv(r'D:\dataset\lilium_price\val_y\105-108all.csv', encoding='utf-8')
+train_x = pd.read_csv(r'D:\dataset\lilium_price\train_x\100-108all.csv', encoding='utf-8')
+train_y = pd.read_csv(r'D:\dataset\lilium_price\train_y\100-108all.csv', encoding='utf-8')
+val_x = pd.read_csv(r'D:\dataset\lilium_price\val_x\100-108all.csv', encoding='utf-8')
+val_y = pd.read_csv(r'D:\dataset\lilium_price\val_y\100-108all.csv', encoding='utf-8')
 
 #正規化
 x_scaler = StandardScaler().fit(train_x)
@@ -52,13 +52,17 @@ valset = utils.Setloader(val_x, val_y)
 batch_size = 100
 val_batch_size = 100
 LR = 0.01
-num_epochs = 2000
+num_epochs = 500
 
 model = model.RNN_model(input_dim=train_x.shape[1], output_dim=train_y.shape[1]).to(device)
 # 選擇優化器與損失函數
 optimizer = torch.optim.AdamW(model.parameters(), lr=LR) 
 criterion = nn.MSELoss().to(device)
-scheduler = lr_scheduler.StepLR(optimizer, step_size=200, gamma=1)
+# scheduler = lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.9)
+scheduler = lr_scheduler.CosineAnnealingLR(optimizer,
+                                               T_max=100,
+                                               eta_min=1e-6,
+                                               last_epoch=-1)
 
 trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True)
 valloader = DataLoader(valset, batch_size=val_batch_size, shuffle=True)
@@ -127,7 +131,7 @@ for epoch in range(num_epochs):
     mae_list.append(mae)
     print('train_loss: {:.4f}, valid_loss: {:.4f}, MAE:{:.2f}, lr:{:.1e}'.format(loss, val_loss, mae, scheduler.get_last_lr()[0]) )
     #每10個epochs及最後一個epoch儲存模型
-    if (not epoch % 100) or (epoch == num_epochs)  :
+    if (not epoch % 10) or (epoch == num_epochs)  :
         torch.save(model.state_dict(), './logs/epoch%d-loss%.4f-val_loss%.4f-mae%.2f.pth' %(epoch, loss, val_loss, mae))
 
 

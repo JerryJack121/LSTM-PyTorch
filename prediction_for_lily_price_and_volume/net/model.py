@@ -8,7 +8,7 @@ class RNN_model(nn.Module):
 
         self.rnn1 = nn.LSTM(
             input_size=input_dim,
-            hidden_size=256,
+            hidden_size=1024,
             num_layers=2,
             batch_first=True
         )
@@ -21,12 +21,13 @@ class RNN_model(nn.Module):
         
         self.drop = nn.Dropout(0.5)
         self.out = nn.Sequential(
-            nn.Linear(256, output_dim)
+            nn.Linear(1024, output_dim)
         )
 
     def forward(self, x):
         # out = self.dnn1(x)
         # out = self.dnn2(out)
+        # out = self.drop(out)
         out, (h_n, h_c) = self.rnn1(x, None)  # None 表示 hidden state 會用全0的 state
         out = self.drop(out)
         # out, (h_n, h_c) = self.rnn2(out, None)        

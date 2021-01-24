@@ -10,7 +10,6 @@ from tqdm import tqdm
 from sklearn.preprocessing import StandardScaler
 import datetime
 
-id = np.arange(1, 373)
 def new_x(predict, test_x, n, x_scaler):
     test_x =  x_scaler.inverse_transform(test_x)
 
@@ -25,8 +24,8 @@ start = datetime.datetime(2019, 12,31)
 end = datetime.datetime(2020, 12,31)
 interval = (end - start).days
 
-path_lastyear_year = r'D:\dataset\lilium_price\val_x\105-108all.csv'    #前一年的訓練資料
-path_weight = r'./weights/epoch100-loss30260.2770-val_loss58149.4132-mae92.15.pth' #權重
+path_lastyear_year = r'D:\dataset\lilium_price\val_x\100-108all.csv'    #前一年的訓練資料
+path_weight = r'./weights/epoch500-loss20809.3832-val_loss47976.5828-mae85.27.pth' #權重
 sub_path = './results/test_flower_price.csv'    #submit格式
 path_result_csv = './results/109_result.csv'
 flower_name = ['FS443', 'FS479', 'FS592', 'FS609', 'FS639', 'FS779', 'FS859', 'FS879', 'FS899', 'FS929']    # 需與訓練時的處理順序相同
@@ -68,7 +67,7 @@ for i in tqdm(range(interval)):
 output_arr = np.array(output_list)
 result_df = pd.DataFrame(output_arr)
 result_df.insert(0,'date',date_list)
-# result_df.to_csv(path_result_csv, float_format='%.2f', header=header)
+result_df.to_csv(path_result_csv, float_format='%.2f', header=header)
 
 
 # #輸出預測結果

@@ -15,15 +15,18 @@ from sklearn.metrics import mean_absolute_percentage_error, mean_absolute_error
 
 #OMP: Error #15: Initializing libiomp5md.dll, but found libiomp5md.dll already initialized.
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+# RuntimeError: CUDA error: unspecified launch failure
+os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 if torch.cuda.is_available():
     device = torch.device('cuda')
     torch.backends.cudnn.benchmark = True
+    torch.cuda.set_device(0)
     torch.cuda.empty_cache()
 else:
     device = torch.device('cpu')
 
-n = 7  # 取前n天的資料作為特徵
+n = 10  # 取前n天的資料作為特徵
 
 #載入資料集
 train_x = pd.read_csv(r'D:\dataset\lilium_price\train_x\105-108all.csv', encoding='utf-8')
@@ -46,16 +49,16 @@ trainset = utils.Setloader(train_x, train_y)
 valset = utils.Setloader(val_x, val_y)
 
 # train
-batch_size = 200
-val_batch_size = 200
-LR = 0.001
+batch_size = 100
+val_batch_size = 100
+LR = 0.01
 num_epochs = 2000
 
 model = model.RNN_model(input_dim=train_x.shape[1], output_dim=train_y.shape[1]).to(device)
 # 選擇優化器與損失函數
 optimizer = torch.optim.AdamW(model.parameters(), lr=LR) 
 criterion = nn.MSELoss().to(device)
-scheduler = lr_scheduler.StepLR(optimizer, step_size=200, gamma=0.9)
+scheduler = lr_scheduler.StepLR(optimizer, step_size=200, gamma=1)
 
 trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True)
 valloader = DataLoader(valset, batch_size=val_batch_size, shuffle=True)

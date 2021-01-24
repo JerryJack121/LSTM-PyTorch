@@ -20,14 +20,14 @@ def new_x(predict, test_x, n, x_scaler):
     return test_x
 
 
-path_lastyear_year = r'D:\dataset\lilium_price\val_x\108all.csv'    #前一年的訓練資料
-path_weight = r'./weights/epoch1000-loss150280.5379-val_loss34599.3843-mae0.5669.pth' #權重
+path_lastyear_year = r'D:\dataset\lilium_price\val_x\105-108all.csv'    #前一年的訓練資料
+path_weight = r'./weights/epoch10000-loss41651.7498-val_loss79367.8735-mae158331473179008480.0000.pth' #權重
 sub_path = './results/test_flower_price.csv'    #submit格式
 path_result_csv = './results/109submit.csv'
 flower_name = ['FS443', 'FS479', 'FS592', 'FS609', 'FS639', 'FS779', 'FS859', 'FS879', 'FS899', 'FS929']    # 需與訓練時的處理順序相同
 cloumn = [ 'price_high', 'price_mid', 'price_avg', 'volume']    # 需與訓練時的處理順序相同
 
-n = 10  # 取前n天的資料作為特徵
+n = 7  # 取前n天的資料作為特徵
 f = 10  #花的種類數
 p = 4   #預測的價格數量
 
@@ -35,7 +35,7 @@ test_df = pd.read_csv(path_lastyear_year)[-1:]  # 取去年的最後n天作為�
 test_x = np.array(test_df)
 
 # # 正歸化
-train_x = pd.read_csv(r'D:\dataset\lilium_price\train_x\108all.csv', encoding='utf-8')
+train_x = pd.read_csv(r'D:\dataset\lilium_price\train_x\105-108all.csv', encoding='utf-8')
 x_scaler = StandardScaler().fit(train_x)
 test_x = x_scaler.transform(test_x)
 test_x = torch.Tensor(test_x)  # to tensor

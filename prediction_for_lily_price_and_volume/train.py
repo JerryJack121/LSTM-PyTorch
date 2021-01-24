@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import os
 from sklearn.preprocessing import StandardScaler
 from torch.optim import lr_scheduler
-from sklearn.metrics import mean_absolute_percentage_error
+from sklearn.metrics import mean_absolute_percentage_error, mean_absolute_error
 
 #OMP: Error #15: Initializing libiomp5md.dll, but found libiomp5md.dll already initialized.
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
@@ -23,7 +23,7 @@ if torch.cuda.is_available():
 else:
     device = torch.device('cpu')
 
-n = 10  # 取前n天的資料作為特徵
+n = 7  # 取前n天的資料作為特徵
 
 #載入資料集
 train_x = pd.read_csv(r'D:\dataset\lilium_price\train_x\105-108all.csv', encoding='utf-8')
@@ -46,19 +46,19 @@ trainset = utils.Setloader(train_x, train_y)
 valset = utils.Setloader(val_x, val_y)
 
 # train
-batch_size = 300
-val_batch_size = 300
-LR = 0.05
-num_epochs = 1000
+batch_size = 200
+val_batch_size = 200
+LR = 0.001
+num_epochs = 2000
 
 model = model.RNN_model(input_dim=train_x.shape[1], output_dim=train_y.shape[1]).to(device)
 # 選擇優化器與損失函數
 optimizer = torch.optim.AdamW(model.parameters(), lr=LR) 
 criterion = nn.MSELoss().to(device)
-scheduler = lr_scheduler.StepLR(optimizer, step_size=100, gamma=0.9)
+scheduler = lr_scheduler.StepLR(optimizer, step_size=200, gamma=0.9)
 
 trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True)
-valloader = DataLoader(valset, batch_size=val_batch_size, shuffle=None)
+valloader = DataLoader(valset, batch_size=val_batch_size, shuffle=True)
 train_epoch_size = math.ceil(len(trainloader.dataset)/batch_size)
 val_epoch_size = math.ceil(len(valloader.dataset)/val_batch_size)
 
@@ -82,7 +82,7 @@ for epoch in range(num_epochs):
             optimizer.zero_grad()  # clear gradients for this training step
             loss.backward()  # back propagation, compute gradients
             optimizer.step()
-            scheduler.step()        
+                    
             #更新進度條
             pbar.set_description('train')
             pbar.set_postfix(
@@ -102,7 +102,11 @@ for epoch in range(num_epochs):
                 inputs, target = inputs.to(device), target.to(device)
                 output = model(torch.unsqueeze(inputs, dim=0))
                 running_val_loss = criterion(torch.squeeze(output), target).item()
-                running_mae = mean_absolute_percentage_error(target.cpu(), torch.squeeze(output).cpu())
+                running_mae = mean_absolute_error(target.cpu(), torch.squeeze(output).cpu())
+                # if running_mape > 1:    #避免爆炸
+                #     print(target[70])
+                #     print(output[0][70])
+                #     running_mape = 1
                 total_val_loss += running_val_loss*inputs.shape[0]
                 total_mae += running_mae*inputs.shape[0]
                 #更新進度條
@@ -113,14 +117,15 @@ for epoch in range(num_epochs):
                             'mae': running_mae
                         })
                 pbar.update(1)
+    scheduler.step()
     val_loss = total_val_loss/len(valloader.dataset)
     mae = total_mae/len(valloader.dataset)
     val_loss_list.append(val_loss)
     mae_list.append(mae)
-    print('train_loss: {:.4f}, valid_loss: {:.4f}, mae:{:.4f}, lr:{:.1e}'.format(loss, val_loss, mae, scheduler.get_last_lr()[0]) )
+    print('train_loss: {:.4f}, valid_loss: {:.4f}, MAE:{:.2f}, lr:{:.1e}'.format(loss, val_loss, mae, scheduler.get_last_lr()[0]) )
     #每10個epochs及最後一個epoch儲存模型
-    if (not epoch % 50) or (epoch == num_epochs)  :
-        torch.save(model.state_dict(), './logs/epoch%d-loss%.4f-val_loss%.4f-mae%.4f.pth' %(epoch, loss, val_loss, mae))
+    if (not epoch % 100) or (epoch == num_epochs)  :
+        torch.save(model.state_dict(), './logs/epoch%d-loss%.4f-val_loss%.4f-mae%.2f.pth' %(epoch, loss, val_loss, mae))
 
 
 #繪製圖

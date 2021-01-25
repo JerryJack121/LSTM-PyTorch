@@ -7,7 +7,7 @@ class RNN_modelv1(nn.Module):
         self.rnn1 = nn.LSTM(
             input_size=input_dim,
             hidden_size=64,
-            num_layers=1,
+            num_layers=2,
             batch_first=True
         )
 

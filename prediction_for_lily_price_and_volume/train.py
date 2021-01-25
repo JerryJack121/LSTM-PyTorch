@@ -29,10 +29,10 @@ else:
 n = 10  # 取前n天的資料作為特徵
 
 #載入資料集
-train_x = pd.read_csv(r'D:\dataset\lilium_price\train_x\104-108_879-899all.csv', encoding='utf-8')
-train_y = pd.read_csv(r'D:\dataset\lilium_price\train_y\104-108_879-899all.csv', encoding='utf-8')
-val_x = pd.read_csv(r'D:\dataset\lilium_price\val_x\104-108_879-899all.csv', encoding='utf-8')
-val_y = pd.read_csv(r'D:\dataset\lilium_price\val_y\104-108_879-899all.csv', encoding='utf-8')
+train_x = pd.read_csv(r'D:\dataset\lilium_price\train_x\FS443.csv', encoding='utf-8')
+train_y = pd.read_csv(r'D:\dataset\lilium_price\train_y\FS443.csv', encoding='utf-8')
+val_x = pd.read_csv(r'D:\dataset\lilium_price\val_x\FS443.csv', encoding='utf-8')
+val_y = pd.read_csv(r'D:\dataset\lilium_price\val_y\FS443.csv', encoding='utf-8')
 
 #正規化
 x_scaler = StandardScaler().fit(train_x)
@@ -52,7 +52,7 @@ valset = utils.Setloader(val_x, val_y)
 batch_size = train_x.shape[0]
 val_batch_size = val_x.shape[0]
 LR = 0.01
-num_epochs = 300
+num_epochs = 100
 
 model = model.RNN_modelv1(input_dim=train_x.shape[1], output_dim=train_y.shape[1]).to(device)
 # 選擇優化器與損失函數

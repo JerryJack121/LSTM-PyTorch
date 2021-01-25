@@ -8,15 +8,17 @@ class RNN_modelv1(nn.Module):
             input_size=input_dim,
             hidden_size=64,
             num_layers=2,
-            batch_first=True
+            batch_first=True,
+            bidirectional=True
         )
-
+        self.drop = nn.Dropout(0.1)
         self.out = nn.Sequential(
-            nn.Linear(64, output_dim)
+            nn.Linear(128, output_dim)
         )
 
     def forward(self, x):
         out, (h_n, h_c) = self.rnn1(x, None)  # None 表示 hidden state 會用全0的 state
+        out = self.drop(out)
         out = self.out(out)
         return out
 

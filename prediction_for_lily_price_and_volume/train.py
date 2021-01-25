@@ -29,10 +29,10 @@ else:
 n = 10  # 取前n天的資料作為特徵
 
 #載入資料集
-train_x = pd.read_csv(r'D:\dataset\lilium_price\train_x\FS929.csv', encoding='utf-8')
-train_y = pd.read_csv(r'D:\dataset\lilium_price\train_y\FS929.csv', encoding='utf-8')
-val_x = pd.read_csv(r'D:\dataset\lilium_price\val_x\FS929.csv', encoding='utf-8')
-val_y = pd.read_csv(r'D:\dataset\lilium_price\val_y\FS929.csv', encoding='utf-8')
+train_x = pd.read_csv(r'D:\dataset\lilium_price\train_x\FS479.csv', encoding='utf-8')
+train_y = pd.read_csv(r'D:\dataset\lilium_price\train_y\FS479.csv', encoding='utf-8')
+val_x = pd.read_csv(r'D:\dataset\lilium_price\val_x\FS479.csv', encoding='utf-8')
+val_y = pd.read_csv(r'D:\dataset\lilium_price\val_y\FS479.csv', encoding='utf-8')
 
 #正規化
 x_scaler = StandardScaler().fit(train_x)
@@ -51,19 +51,19 @@ valset = utils.Setloader(val_x, val_y)
 # train
 batch_size = train_x.shape[0]
 val_batch_size = val_x.shape[0]
-LR = 0.01
+LR = 0.05
 num_epochs = 500
 
 model = model.RNN_modelv1(input_dim=train_x.shape[1], output_dim=train_y.shape[1]).to(device)
-model.load_state_dict(torch.load(r'./weights/FS899/epoch500-loss54983.2031-val_loss10039.2021-mae53.55.pth'))    #載入預訓練權重
+model.load_state_dict(torch.load(r'./weights/FS443/epoch281-loss19032.6270-val_loss12422.3350-mae69.93.pth'))    #載入預訓練權重
 # 選擇優化器與損失函數
 optimizer = torch.optim.AdamW(model.parameters(), lr=LR) 
 criterion = nn.MSELoss().to(device)
-scheduler = lr_scheduler.StepLR(optimizer, step_size=100, gamma=0.9)
-# scheduler = lr_scheduler.CosineAnnealingLR(optimizer,
-#                                                T_max=10,
-#                                                eta_min=1e-6,
-#                                                last_epoch=-1)
+# scheduler = lr_scheduler.StepLR(optimizer, step_size=100, gamma=0.9)
+scheduler = lr_scheduler.CosineAnnealingLR(optimizer,
+                                               T_max=100,
+                                               eta_min=1e-6,
+                                               last_epoch=-1)
 
 trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True)
 valloader = DataLoader(valset, batch_size=val_batch_size, shuffle=True)
@@ -73,6 +73,7 @@ val_epoch_size = math.ceil(len(valloader.dataset)/val_batch_size)
 loss_list = []
 val_loss_list = []
 mae_list = []
+lr_list = []
 for epoch in range(num_epochs):
     epoch += 1
     print('running epoch: {} / {}'.format(epoch, num_epochs))
@@ -121,6 +122,7 @@ for epoch in range(num_epochs):
                             'mae': running_mae
                         })
                 pbar.update(1)
+    lr_list.append(scheduler.get_last_lr())
     scheduler.step()
     val_loss = total_val_loss/len(valloader.dataset)
     mae = total_mae/len(valloader.dataset)
@@ -147,4 +149,11 @@ plt.xlabel('Epochs')
 plt.ylabel('mae')
 plt.plot(mae_list)
 plt.savefig('./images/mae.jpg')
+plt.show()
+
+plt.figure()
+plt.xlabel('Epochs')
+plt.ylabel('Learning Rate')
+plt.plot(lr_list)
+plt.savefig('./images/lr.jpg')
 plt.show()

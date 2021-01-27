@@ -6,13 +6,14 @@ class RNN_modelv1(nn.Module):
 
         self.rnn1 = nn.LSTM(
             input_size=input_dim,
-            hidden_size=64,
-            num_layers=2,
-            batch_first=True
+            hidden_size=128,
+            num_layers=3,
+            batch_first=True,
+            bidirectional=True
         )
-
+        self.drop = nn.Dropout(0.5)
         self.out = nn.Sequential(
-            nn.Linear(64, output_dim)
+            nn.Linear(128*2, output_dim)
         )
 
     def forward(self, x):

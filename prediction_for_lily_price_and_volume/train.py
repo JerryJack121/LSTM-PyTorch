@@ -52,7 +52,7 @@ valset = utils.Setloader(val_x, val_y)
 batch_size = train_x.shape[0]
 val_batch_size = val_x.shape[0]
 LR = 0.1
-num_epochs = 6000
+num_epochs = 3000
 
 model = model.RNN_modelv1(input_dim=train_x.shape[1], output_dim=train_y.shape[1]).to(device)
 # 選擇優化器與損失函數
@@ -72,6 +72,7 @@ val_epoch_size = math.ceil(len(valloader.dataset)/val_batch_size)
 loss_list = []
 val_loss_list = []
 mae_list = []
+lr_list = []
 for epoch in range(num_epochs):
     epoch += 1
     print('running epoch: {} / {}'.format(epoch, num_epochs))

@@ -29,10 +29,10 @@ else:
 n = 10  # 取前n天的資料作為特徵
 
 #載入資料集
-train_x = pd.read_csv(r'D:\dataset\lilium_price\train_x\FS479.csv', encoding='utf-8')
-train_y = pd.read_csv(r'D:\dataset\lilium_price\train_y\FS479.csv', encoding='utf-8')
-val_x = pd.read_csv(r'D:\dataset\lilium_price\val_x\FS479.csv', encoding='utf-8')
-val_y = pd.read_csv(r'D:\dataset\lilium_price\val_y\FS479.csv', encoding='utf-8')
+train_x = pd.read_csv(r'D:\dataset\lilium_price\train_x\FS443.csv', encoding='utf-8')
+train_y = pd.read_csv(r'D:\dataset\lilium_price\train_y\FS443.csv', encoding='utf-8')
+val_x = pd.read_csv(r'D:\dataset\lilium_price\val_x\FS443.csv', encoding='utf-8')
+val_y = pd.read_csv(r'D:\dataset\lilium_price\val_y\FS443.csv', encoding='utf-8')
 
 #正規化
 x_scaler = StandardScaler().fit(train_x)
@@ -52,17 +52,17 @@ valset = utils.Setloader(val_x, val_y)
 batch_size = train_x.shape[0]
 val_batch_size = val_x.shape[0]
 LR = 0.05
-num_epochs = 500
+num_epochs = 1000
 
 model = model.RNN_modelv1(input_dim=train_x.shape[1], output_dim=train_y.shape[1]).to(device)
-model.load_state_dict(torch.load(r'./weights/FS443/epoch281-loss19032.6270-val_loss12422.3350-mae69.93.pth'))    #載入預訓練權重
+# model.load_state_dict(torch.load(r'./weights/FS899/epoch898-loss20553.2910-val_loss34573.2227-mae72.24.pth'))    #載入預訓練權重
 # 選擇優化器與損失函數
 optimizer = torch.optim.AdamW(model.parameters(), lr=LR) 
 criterion = nn.MSELoss().to(device)
 # scheduler = lr_scheduler.StepLR(optimizer, step_size=100, gamma=0.9)
 scheduler = lr_scheduler.CosineAnnealingLR(optimizer,
-                                               T_max=100,
-                                               eta_min=1e-6,
+                                               T_max=num_epochs,
+                                               eta_min=0.001,
                                                last_epoch=-1)
 
 trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True)
@@ -123,7 +123,7 @@ for epoch in range(num_epochs):
                         })
                 pbar.update(1)
     lr_list.append(scheduler.get_last_lr())
-    scheduler.step()
+    # scheduler.step()
     val_loss = total_val_loss/len(valloader.dataset)
     mae = total_mae/len(valloader.dataset)
     val_loss_list.append(val_loss)

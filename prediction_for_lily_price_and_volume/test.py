@@ -26,7 +26,7 @@ f = 10  #花的種類數
 p = 6   #預測的價格數量
 
 
-path_weight = r'E:\Blacky_Lily\epoch7776_train_loss_6817.8867_val_loss_17157.2480_mae_65.7975.pth' #權重
+path_weight = r'E:\Blacky_Lily\epoch2574_train_loss_35653.3867_val_loss_15754.0000_mae_69.4205.pth' #權重
 sub_path = './results/test_flower_price.csv'    #submit格式
 path_result_csv = './results/0127result.csv'
 flower_name = ['FS443', 'FS479', 'FS592', 'FS609', 'FS639', 'FS779', 'FS859', 'FS879', 'FS899', 'FS929']    # 需與訓練時的處理順序相同
